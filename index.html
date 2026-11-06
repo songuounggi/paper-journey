@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#3b2f27" />
+  <title>보리를 찾아서</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Jua&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- 메인 무대 (360 x 640 좌표계) -->
+    <svg id="stage" viewBox="0 0 360 640" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <!-- 종이 질감: 가장자리 살짝 울퉁불퉁 + 미세한 점 + 그림자 -->
+        <filter id="paper" x="-15%" y="-15%" width="130%" height="140%" color-interpolation-filters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" result="warp" />
+          <feDisplacementMap in="SourceGraphic" in2="warp" scale="2.5" xChannelSelector="R" yChannelSelector="G" result="rough" />
+          <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="1" seed="9" result="noise" />
+          <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0.25  0 0 0 0 0.18  0 0 0 0 0.1  0.55 0 0 0 -0.2" result="speck" />
+          <feComposite in="speck" in2="rough" operator="in" result="speckIn" />
+          <feGaussianBlur in="rough" stdDeviation="2" result="blur" />
+          <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.15  0 0 0 0 0.1  0 0 0 0 0.05  0 0 0 0.35 0" result="shadowC" />
+          <feOffset in="shadowC" dx="0" dy="3" result="shadow" />
+          <feMerge><feMergeNode in="shadow" /><feMergeNode in="rough" /><feMergeNode in="speckIn" /></feMerge>
+        </filter>
+        <!-- 종이 뒷면 -->
+        <filter id="backside" x="-15%" y="-15%" width="130%" height="140%" color-interpolation-filters="sRGB">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="2.5" result="b" />
+          <feOffset in="b" dy="4" result="bo" />
+          <feColorMatrix in="bo" type="matrix" values="0 0 0 0 0.1  0 0 0 0 0.07  0 0 0 0 0.03  0 0 0 0.35 0" result="sh" />
+          <feFlood flood-color="#efe2c4" result="f" />
+          <feComposite in="f" in2="SourceAlpha" operator="in" result="sil" />
+          <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="1" seed="2" result="noise" />
+          <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0.3  0 0 0 0 0.22  0 0 0 0 0.12  0.5 0 0 0 -0.2" result="speck" />
+          <feComposite in="speck" in2="SourceAlpha" operator="in" result="sp" />
+          <feMerge><feMergeNode in="sh" /><feMergeNode in="sil" /><feMergeNode in="sp" /></feMerge>
+        </filter>
+      </defs>
+      <g id="scene"></g>
+      <g id="hud"></g>
+      <g id="fly"></g>
+    </svg>
+
+    <button id="mute" aria-label="소리 켜기/끄기">🔊</button>
+    <div id="hint"></div>
+    <div id="toast"></div>
+    <div id="banner"></div>
+
+    <!-- 타이틀 -->
+    <div id="title" class="layer">
+      <div class="title-text">
+        <small>종이로 만든 세상 속 작은 여행</small>
+        <h1>보리를 찾아서</h1>
+      </div>
+      <div id="titleArt"></div>
+      <button id="startBtn" class="btn">여행 시작하기</button>
+      <p class="title-tip">끌고, 당기고, 접어서 보리의 흔적을 찾아요</p>
+    </div>
+
+    <!-- 종이접기 -->
+    <div id="origami" class="layer hidden">
+      <div class="ori-head">
+        <div class="ori-badge">종이접기 시간</div>
+        <h2 id="oriTitle"></h2>
+        <div id="oriStep"></div>
+      </div>
+      <svg id="oriSvg" viewBox="-1.5 -1.5 3 3"></svg>
+      <p id="oriText"></p>
+      <button id="oriNext" class="btn hidden">계속하기</button>
+    </div>
+
+    <!-- 엔딩 -->
+    <div id="ending" class="layer hidden">
+      <small class="end-sub">CHAPTER 1 · 종이 숲</small>
+      <h1>챕터 클리어!</h1>
+      <div id="endDog"></div>
+      <div id="endItems"></div>
+      <p class="end-teaser">발자국은 <b>바다</b> 쪽으로 이어져 있다…<br>보리야, 조금만 기다려!</p>
+      <small class="end-soon">CHAPTER 2 · 종이 바다 — 준비 중</small>
+      <button id="restartBtn" class="btn">처음부터 다시</button>
+    </div>
+
+    <div id="pageturn" class="hidden"></div>
+  </div>
+
+  <script src="js/core.js"></script>
+  <script src="js/fold.js"></script>
+  <script src="js/art.js"></script>
+  <script src="js/origami.js"></script>
+  <script src="js/book.js"></script>
+  <script src="js/scenes.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
