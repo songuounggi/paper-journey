@@ -95,34 +95,6 @@ const Art = {
     </g>`;
   },
 
-  // ---- 주인공 (발 중심이 0,0) ----
-  kid() {
-    return `<g class="kid-body">
-      <ellipse cx="0" cy="1" rx="15" ry="3.5" fill="rgba(107,90,158,.16)"/>
-      <rect x="-7.5" y="-15" width="5.5" height="15" rx="2.75" fill="#8C84AC"/>
-      <rect x="2" y="-15" width="5.5" height="15" rx="2.75" fill="#8C84AC"/>
-      <rect x="-19" y="-40" width="10" height="20" rx="4.5" fill="${C.coral}" ${P}/>
-      <path d="M-13 -12 L-8.5 -40 Q0 -45 8.5 -40 L13 -12 Q0 -9 -13 -12Z" fill="${C.butter}"
-        stroke="${C.butter}" stroke-width="2" stroke-linejoin="round" ${P}/>
-      <line x1="0" y1="-38" x2="0" y2="-13" stroke="#F2CB78" stroke-width="1"/>
-      <circle cx="0" cy="-51" r="11.5" fill="#FFE1CF" ${P}/>
-      <path d="M-11.5 -52 Q-11 -64 0 -63.5 Q11.5 -64 11.5 -51 Q6 -58 -1 -57 Q-8 -57 -11.5 -52Z" fill="#8A7398"/>
-      <circle cx="-2.5" cy="-50" r="1.6" fill="${C.ink}"/><circle cx="5" cy="-50" r="1.6" fill="${C.ink}"/>
-      <circle cx="8" cy="-46" r="2.3" fill="${C.pink}" opacity=".8"/><circle cx="-6" cy="-46" r="2.3" fill="${C.pink}" opacity=".8"/>
-      <path d="M0 -45 q1.5 1.5 3 0" stroke="#B0788A" stroke-width="1" fill="none" stroke-linecap="round"/>
-      <g class="kid-tulip" style="display:none">
-        <line x1="12" y1="-24" x2="15" y2="-44" stroke="${C.treeDark}" stroke-width="2" stroke-linecap="round"/>
-        <path d="M15 -44 l-5 -3 1 -7 4 4 4 -4 1 7z" fill="${C.pink}" stroke="#FF9EB8" stroke-width="1" stroke-linejoin="round"/>
-        <circle cx="12" cy="-24" r="3" fill="#FFE1CF"/>
-      </g>
-      <g class="kid-hat" style="display:none" ${P}>
-        <path d="M-15 -57 L0 -80 L15 -57 Z" fill="#B7D2F7" stroke="#B7D2F7" stroke-width="2" stroke-linejoin="round"/>
-        <rect x="-16" y="-61" width="32" height="6" rx="2" fill="#94BBF0"/>
-        <path d="M0 -60.4 l1 2 2.2 .3 -1.6 1.5 .4 2.2 -2 -1 -2 1 .4 -2.2 -1.6 -1.5 2.2 -.3z" fill="${C.butter}"/>
-      </g>
-    </g>`;
-  },
-
   // ---- 보리 (앉은 모습, 발 중심 0,0) ----
   bori() {
     return `<g>

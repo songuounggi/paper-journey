@@ -111,6 +111,17 @@
       <p class="title-tip">끌고, 당기고, 접어서 보리의 흔적을 찾아요</p>
     </div>
 
+    <!-- 주인공 선택 -->
+    <div id="select" class="layer hidden">
+      <small class="sel-sub">함께 떠날 주인공</small>
+      <h2 class="sel-title">누구랑 보리를 찾으러 갈까?</h2>
+      <div class="sel-stage"><svg id="selPreview" viewBox="12 70 176 156"></svg></div>
+      <h3 id="selName"></h3>
+      <p id="selDesc"></p>
+      <div id="selList"></div>
+      <button id="selGo" class="btn">이 친구로 출발!</button>
+    </div>
+
     <!-- 종이접기 -->
     <div id="origami" class="layer hidden">
       <div class="ori-head">
@@ -149,6 +160,7 @@
   <script src="js/core.js"></script>
   <script src="js/fold.js"></script>
   <script src="js/art.js"></script>
+  <script src="js/characters.js"></script>
   <script src="js/origami.js"></script>
   <script src="js/book.js"></script>
   <script src="js/scenes.js"></script>

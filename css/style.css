@@ -176,6 +176,40 @@ html, body {
 @keyframes floaty { 50% { transform: translateY(-8px); } }
 .title-tip { font-size: 3.8cqw; color: var(--ink-soft); margin: 0; }
 
+/* 캐릭터 소품 */
+.no-leash .leash { display: none; }
+.has-hat .own-hat { display: none; }
+
+/* 주인공 선택 */
+#select {
+  gap: 1.4cqh; padding: 0 6cqw;
+  background:
+    radial-gradient(circle at 15% 10%, #FFE6EF 0, transparent 38%),
+    radial-gradient(circle at 90% 90%, #E2ECFF 0, transparent 45%),
+    linear-gradient(#F7F3FF, #FFF6F8);
+}
+.sel-sub {
+  font-size: 3.4cqw; color: #fff; padding: 1cqw 3.5cqw; border-radius: 99px;
+  background: linear-gradient(135deg, var(--lav), var(--pink));
+}
+.sel-title { margin: 0; font-family: 'Jua', sans-serif; font-weight: normal; font-size: 7.4cqw; }
+.sel-stage {
+  width: 100%; border-radius: 7cqw; overflow: hidden; box-shadow: var(--e3);
+  background: #fff;
+}
+#selPreview { display: block; width: 100%; }
+#selPreview .sel-char { animation: selPop .45s cubic-bezier(.3, 1.6, .5, 1); transform-box: fill-box; transform-origin: bottom center; }
+@keyframes selPop { 0% { transform: scale(.85) translateY(6px); opacity: 0; } 100% { transform: none; opacity: 1; } }
+#selName { margin: 1cqh 0 0; font-family: 'Jua', sans-serif; font-weight: normal; font-size: 6.4cqw; }
+#selDesc { margin: 0; font-size: 4cqw; color: var(--ink-soft); min-height: 5cqw; }
+#selList { display: flex; justify-content: center; gap: 2.4cqw; margin: 1cqh 0 1.5cqh; }
+.sel-item {
+  width: 15.5cqw; height: 15.5cqw; padding: 0; border: none; border-radius: 5cqw; cursor: pointer;
+  background: var(--card); box-shadow: var(--e1); transition: transform .2s, box-shadow .2s;
+}
+.sel-item svg { width: 100%; height: 100%; display: block; }
+.sel-item.on { transform: translateY(-1.2cqw); box-shadow: 0 0 0 .8cqw #fff, 0 0 0 1.4cqw var(--lav), var(--e2); }
+
 /* 종이접기 */
 #origami {
   justify-content: flex-start; padding-top: 6cqh; gap: 1.2cqh;

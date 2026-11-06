@@ -1,5 +1,6 @@
 // ===== 게임 흐름 =====
-const State = { hasHat: false, hasTulip: false, found: [] };
+const State = { hasHat: false, hasTulip: false, found: [], char: localStorage.getItem('bori.char') || 'kid' };
+if (!CHARACTERS[State.char]) State.char = 'kid';
 
 const FLOW = [
   { t: 'scene', id: 'entrance' },
@@ -34,11 +35,10 @@ function setupHud() {
 // ---- 주인공 ----
 function makeKid(parent, x, y) {
   const g = G(parent, '', { class: 'kid' });
-  G(g, Art.kid());
-  g.querySelector('.kid-hat').style.display = State.hasHat ? '' : 'none';
-  g.querySelector('.kid-tulip').style.display = State.hasTulip ? '' : 'none';
+  G(g, characterSVG(State.char, { hat: State.hasHat, tulip: State.hasTulip }));
+  const sc = CHARACTERS[State.char].sceneScale;
   let cx = x, cy = y, facing = 1, hopping = false;
-  const place = (dy = 0) => g.setAttribute('transform', `translate(${cx} ${cy + dy}) scale(${facing} 1)`);
+  const place = (dy = 0) => g.setAttribute('transform', `translate(${cx} ${cy + dy}) scale(${facing * sc} ${sc})`);
   place();
   g.addEventListener('pointerdown', async e => {
     e.stopPropagation();
@@ -151,7 +151,7 @@ async function turnPage(swap) {
 }
 
 function hideLayers() {
-  ['title', 'origami', 'ending'].forEach(id => $(id).classList.add('hidden'));
+  ['title', 'select', 'origami', 'ending'].forEach(id => $(id).classList.add('hidden'));
   hint('');
 }
 
@@ -189,6 +189,46 @@ function showEnding() {
   Sound.fanfare();
 }
 
+// ---- 주인공 선택 ----
+const SEL_SCENE = `
+  <rect x="0" y="0" width="200" height="240" fill="url(#skyMorning)"/>
+  <circle cx="162" cy="96" r="13" fill="${C.sun}"/>
+  <path d="M0 175 Q50 150 100 168 T200 160 V240 H0Z" fill="url(#hillFar)"/>
+  <ellipse cx="100" cy="216" rx="96" ry="22" fill="url(#ground)" ${P}/>`;
+
+function thumbViewBox(id) {
+  const h = CHARACTERS[id].h;
+  return `-${h * 0.3} ${-h - 6} ${h * 0.6} ${h * 0.6}`;
+}
+
+function renderSelect() {
+  const id = State.char, ch = CHARACTERS[id];
+  $('selPreview').innerHTML = SEL_SCENE + `
+    <g class="sel-char"><g transform="translate(${id === 'hoodie' ? 70 : 75} 214) scale(${ch.previewScale})">${characterSVG(id, { leash: true })}</g></g>
+    <g transform="translate(140 214) scale(.85)">${Art.bori()}</g>`;
+  $('selName').textContent = ch.name;
+  $('selDesc').textContent = ch.desc;
+  document.querySelectorAll('.sel-item').forEach(b => b.classList.toggle('on', b.dataset.id === id));
+}
+
+function showSelect() {
+  return turnPage(() => {
+    hideLayers();
+    sceneLayer.innerHTML = '';
+    $('selList').innerHTML = CHARACTER_IDS.map(id =>
+      `<button class="sel-item" data-id="${id}" aria-label="${CHARACTERS[id].name}">
+        <svg viewBox="${thumbViewBox(id)}">${characterSVG(id)}</svg></button>`).join('');
+    document.querySelectorAll('.sel-item').forEach(b => b.onclick = () => {
+      if (State.char === b.dataset.id) return;
+      Sound.pop();
+      State.char = b.dataset.id;
+      renderSelect();
+    });
+    renderSelect();
+    $('select').classList.remove('hidden');
+  });
+}
+
 function restart() {
   State.hasHat = false;
   State.hasTulip = false;
@@ -196,7 +236,7 @@ function restart() {
   Origami.reset();
   slots.forEach(s => { s.innerHTML = ''; s.classList.remove('slot-pop'); });
   flowIdx = -1;
-  next();
+  showSelect();
 }
 
 // ---- 시작 ----
@@ -212,14 +252,16 @@ window.addEventListener('DOMContentLoaded', () => {
     <ellipse cx="180" cy="262" rx="156" ry="24" fill="url(#ground)" filter="url(#e3)"/>
     ${Art.pine(60, 262, 120, C.tree, P3)}${Art.pine(300, 262, 140, C.treeDark, P3)}${Art.pine(255, 262, 80, C.treeLight, P)}
     ${Art.flower(96, 272, C.pink)}${Art.flower(268, 276, C.butter)}${Art.flower(110, 280, C.lavender)}
-    <g transform="translate(140 262) scale(1.5)">${Art.kid()}</g>
+    <g transform="translate(140 262) scale(${1.5 * CHARACTERS[State.char].sceneScale})">${characterSVG(State.char)}</g>
     <g transform="translate(222 262) scale(1.15)"><g class="title-bori">${Art.bori()}</g></g>
     <g class="title-heart"><path d="M180 150 c-6 -12 -24 -8 -20 6 c3 9 20 18 20 18 s17 -9 20 -18 c4 -14 -14 -18 -20 -6z" fill="${C.pink}" filter="url(#paper)"/></g>
   </svg>`;
-  // 타이틀의 아이는 모자 없이
-  $('titleArt').querySelector('.kid-hat').style.display = 'none';
-
-  $('startBtn').onclick = () => { Sound.init(); next(); };
+  $('startBtn').onclick = () => { Sound.init(); showSelect(); };
+  $('selGo').onclick = () => {
+    Sound.init();
+    localStorage.setItem('bori.char', State.char);
+    next();
+  };
   $('restartBtn').onclick = () => { Sound.init(); restart(); };
   $('mute').onclick = () => {
     Sound.init();
