@@ -9,7 +9,7 @@ const Book = (() => {
   function dragHint(parent, from, to) {
     return G(parent, `
       <g class="drag-hint">
-        <circle r="13" fill="#fff" opacity=".85" stroke="#6b4a35" stroke-width="1.5" stroke-dasharray="3 2">
+        <circle r="13" fill="#fff" opacity=".9" stroke="#9F8BD9" stroke-width="2" filter="url(#paper)">
           <animateTransform attributeName="transform" type="translate" values="${from[0]} ${from[1]};${to[0]} ${to[1]};${to[0]} ${to[1]}"
             keyTimes="0;0.7;1" dur="1.7s" repeatCount="indefinite"/>
           <animate attributeName="opacity" values="0;.85;.85;0" keyTimes="0;.15;.7;1" dur="1.7s" repeatCount="indefinite"/>
@@ -102,14 +102,15 @@ const Book = (() => {
     const ax = o.axis[0], ay = o.axis[1];
     const x1 = o.x + ax * o.length, y1 = o.y + ay * o.length;
     G(parent, `
-      <line x1="${o.x - ax * 10}" y1="${o.y - ay * 10}" x2="${x1 + ax * 10}" y2="${y1 + ay * 10}" stroke="#5a4330" stroke-width="5" stroke-linecap="round" opacity=".55"/>
-      <line x1="${o.x - ax * 10}" y1="${o.y - ay * 10}" x2="${x1 + ax * 10}" y2="${y1 + ay * 10}" stroke="#2e2218" stroke-width="2" stroke-linecap="round" opacity=".6"/>`);
+      <line x1="${o.x - ax * 10}" y1="${o.y - ay * 10}" x2="${x1 + ax * 10}" y2="${y1 + ay * 10}" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" opacity=".7"/>
+      <line x1="${o.x - ax * 10}" y1="${o.y - ay * 10}" x2="${x1 + ax * 10}" y2="${y1 + ay * 10}" stroke="#B9AEDB" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 6"/>`);
     const g = G(parent, `
-      <g ${P}>
-        <rect x="-27" y="-17" width="54" height="34" rx="7" fill="#fbf3dc" stroke="#c8b48a" stroke-width="1.5"/>
+      <g ${P3}>
+        <rect x="-29" y="-18" width="58" height="36" rx="18" fill="#FFFFFF"/>
       </g>
-      <text x="-4" y="5" font-size="14" text-anchor="middle" fill="#6b4a35" font-weight="700">${o.label || '당겨'}</text>
-      <path d="M14 -6 L21 0 L14 6" stroke="#d9644a" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
+      <text x="-5" y="5" font-size="14" text-anchor="middle" fill="#5B5170">${o.label || '당겨'}</text>
+      <circle cx="17" cy="0" r="8" fill="#FFB0C2"/>
+      <path d="M15 -3.5 L19 0 L15 3.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
       { class: 'tab' });
     let t = 0, state = 'idle', start = null, base = 0, hint = null;
     const set = v => { t = v; g.setAttribute('transform', `translate(${o.x + ax * o.length * v} ${o.y + ay * o.length * v})`); o.onProgress && o.onProgress(v); };
@@ -185,9 +186,9 @@ const Book = (() => {
     const g = G(parent, `
       <circle r="26" fill="transparent"/>
       <g class="sparkles">
-        <path d="M-20 -18 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z" fill="#fff6b0"/>
-        <path d="M19 -10 l1.5 4 4 1.5 -4 1.5 -1.5 4 -1.5 -4 -4 -1.5 4 -1.5z" fill="#fff6b0"/>
-        <path d="M8 20 l1.2 3 3 1.2 -3 1.2 -1.2 3 -1.2 -3 -3 -1.2 3 -1.2z" fill="#fff6b0"/>
+        <path d="M-20 -18 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z" fill="#FFE29A"/>
+        <path d="M19 -10 l1.5 4 4 1.5 -4 1.5 -1.5 4 -1.5 -4 -4 -1.5 4 -1.5z" fill="#FFE29A"/>
+        <path d="M8 20 l1.2 3 3 1.2 -3 1.2 -1.2 3 -1.2 -3 -3 -1.2 3 -1.2z" fill="#FFE29A"/>
       </g>
       <g class="clue-icon">${o.icon}</g>`,
       { class: 'clue', transform: `translate(${o.x} ${o.y}) scale(${o.scale || 1})` });

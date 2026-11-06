@@ -1,5 +1,5 @@
 // ===== 게임 흐름 =====
-const State = { hasHat: false, found: [] };
+const State = { hasHat: false, hasTulip: false, found: [] };
 
 const FLOW = [
   { t: 'scene', id: 'entrance' },
@@ -21,14 +21,14 @@ function slotPos(i) { return [232 + i * 44, 37]; }
 function setupHud() {
   hud.innerHTML = '';
   G(hud, `
-    <g ${P}><rect x="204" y="13" width="146" height="48" rx="10" fill="#e9d5a9"/></g>
-`);
+    <g ${P}><rect x="203" y="13" width="146" height="48" rx="24" fill="#FFFFFF" fill-opacity=".9"/></g>
+    <g ${P}><rect x="60" y="20" width="132" height="34" rx="17" fill="#FFFFFF" fill-opacity=".9"/></g>`);
   slots = [0, 1, 2].map(i => {
     const [x, y] = slotPos(i);
-    G(hud, `<circle cx="${x}" cy="${y}" r="17" fill="#f6ead0" stroke="#b09468" stroke-width="1.5" stroke-dasharray="3 3"/>`);
+    G(hud, `<circle cx="${x}" cy="${y}" r="17" fill="#F4F0FF" stroke="#C9B8F2" stroke-width="1.5" stroke-dasharray="3 3"/>`);
     return G(hud, '', { transform: `translate(${x} ${y}) scale(.8)` });
   });
-  hudTitle = S('text', { x: 54, y: 43, 'font-size': 17, fill: '#5a4330', 'font-weight': 700, class: 'hud-title' }, hud);
+  hudTitle = S('text', { x: 126, y: 42.5, 'font-size': 15, fill: C.ink, 'text-anchor': 'middle', class: 'hud-title' }, hud);
 }
 
 // ---- 주인공 ----
@@ -36,6 +36,7 @@ function makeKid(parent, x, y) {
   const g = G(parent, '', { class: 'kid' });
   G(g, Art.kid());
   g.querySelector('.kid-hat').style.display = State.hasHat ? '' : 'none';
+  g.querySelector('.kid-tulip').style.display = State.hasTulip ? '' : 'none';
   let cx = x, cy = y, facing = 1, hopping = false;
   const place = (dy = 0) => g.setAttribute('transform', `translate(${cx} ${cy + dy}) scale(${facing} 1)`);
   place();
@@ -173,6 +174,7 @@ async function next() {
   if (f.t === 'origami') {
     await oriDone;
     if (f.id === 'hat') State.hasHat = true;
+    if (f.id === 'tulip') State.hasTulip = true;
     next();
   }
 }
@@ -180,7 +182,8 @@ async function next() {
 function showEnding() {
   const e = $('ending');
   e.classList.remove('hidden');
-  $('endDog').innerHTML = Origami.snapshotSVG('dog');
+  $('endAlbum').innerHTML = ['hat', 'tulip', 'dog'].filter(Origami.has).map(id =>
+    `<div class="album-item">${Origami.snapshotSVG(id)}<span>${RECIPES[id].name}</span></div>`).join('');
   $('endItems').innerHTML = CLUE_ICONS.map(ic => `<svg viewBox="-24 -24 48 54">${ic}</svg>`).join('');
   sceneLayer.innerHTML = '';
   Sound.fanfare();
@@ -188,7 +191,9 @@ function showEnding() {
 
 function restart() {
   State.hasHat = false;
+  State.hasTulip = false;
   State.found = [];
+  Origami.reset();
   slots.forEach(s => { s.innerHTML = ''; s.classList.remove('slot-pop'); });
   flowIdx = -1;
   next();
@@ -204,11 +209,12 @@ window.addEventListener('DOMContentLoaded', () => {
   setupHud();
 
   $('titleArt').innerHTML = `<svg viewBox="0 0 360 300">
-    <ellipse cx="180" cy="262" rx="150" ry="22" fill="#82ab64" filter="url(#paper)"/>
-    ${Art.pine(60, 262, 120, '#5e8a4c')}${Art.pine(300, 262, 140, '#5e8a4c')}${Art.pine(255, 262, 80, '#8fb26f')}
+    <ellipse cx="180" cy="262" rx="156" ry="24" fill="url(#ground)" filter="url(#e3)"/>
+    ${Art.pine(60, 262, 120, C.tree, P3)}${Art.pine(300, 262, 140, C.treeDark, P3)}${Art.pine(255, 262, 80, C.treeLight, P)}
+    ${Art.flower(96, 272, C.pink)}${Art.flower(268, 276, C.butter)}${Art.flower(110, 280, C.lavender)}
     <g transform="translate(140 262) scale(1.5)">${Art.kid()}</g>
     <g transform="translate(222 262) scale(1.15)"><g class="title-bori">${Art.bori()}</g></g>
-    <g class="title-heart"><path d="M180 150 c-6 -12 -24 -8 -20 6 c3 9 20 18 20 18 s17 -9 20 -18 c4 -14 -14 -18 -20 -6z" fill="#e8798f" filter="url(#paper)"/></g>
+    <g class="title-heart"><path d="M180 150 c-6 -12 -24 -8 -20 6 c3 9 20 18 20 18 s17 -9 20 -18 c4 -14 -14 -18 -20 -6z" fill="${C.pink}" filter="url(#paper)"/></g>
   </svg>`;
   // 타이틀의 아이는 모자 없이
   $('titleArt').querySelector('.kid-hat').style.display = 'none';

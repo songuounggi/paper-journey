@@ -1,14 +1,29 @@
 // ===== 종이접기 세션 화면 =====
 // 점선(접는 선)과 화살표를 보여주고, 손가락으로 끌면 종이가 실시간으로 접힌다.
+// 다 접으면 완성작을 크게 확대해서 보여주고, 앨범에 저장한다.
 const Origami = (() => {
   const layer = () => document.getElementById('origami');
-  let finalMarkup = {};
+  const album = {};
+
+  const SHADOW_DEFS = id => `
+    <filter id="${id}" x="-30%" y="-30%" width="160%" height="170%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="0.06" result="b1"/>
+      <feOffset in="b1" dy="0.07" result="o1"/>
+      <feFlood flood-color="#6B5A9E" flood-opacity="0.22"/>
+      <feComposite in2="o1" operator="in" result="s1"/>
+      <feGaussianBlur in="SourceAlpha" stdDeviation="0.012" result="b2"/>
+      <feOffset in="b2" dy="0.015" result="o2"/>
+      <feFlood flood-color="#4A3F6B" flood-opacity="0.18"/>
+      <feComposite in2="o2" operator="in" result="s2"/>
+      <feMerge><feMergeNode in="s1"/><feMergeNode in="s2"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>`;
 
   function run(recipeId) {
     return new Promise(resolve => {
       const R = RECIPES[recipeId];
       const root = layer();
       const svg = document.getElementById('oriSvg');
+      const stage = root.querySelector('.ori-stage');
       const title = document.getElementById('oriTitle');
       const stepLbl = document.getElementById('oriStep');
       const text = document.getElementById('oriText');
@@ -16,28 +31,29 @@ const Origami = (() => {
 
       svg.innerHTML = `
         <defs>
-          <filter id="oriShadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="0.035" stdDeviation="0.03" flood-color="#000" flood-opacity="0.35"/>
-          </filter>
-          <marker id="oriArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-            <path d="M0 0 L10 5 L0 10 z" fill="#ffd166"/>
+          ${SHADOW_DEFS('oriShadow')}
+          <marker id="oriArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse">
+            <path d="M0 1 L9 5 L0 9 z" fill="#FF8FA8" stroke="#FF8FA8" stroke-width="1.5" stroke-linejoin="round"/>
           </marker>
         </defs>`;
       const cam = G(svg);
       const paperG = G(cam, '', { filter: 'url(#oriShadow)' });
       const guideG = G(cam);
       const decoG = G(cam, '', { class: 'ori-deco' });
+      const fxG = G(svg);
 
       let layers = [{ pts: R.start.map(p => p.slice()), flip: false }];
       let idx = 0, split = null, theta = 0, busy = true, drag = null, smax = 1;
-      let camX = 0, camY = 0;
+      let camX = 0, camY = 0, camS = 1;
 
+      stage.classList.remove('done');
       title.textContent = R.name;
       stepLbl.textContent = '';
       text.innerHTML = R.intro;
       btn.textContent = '접어 볼래!';
       btn.classList.remove('hidden');
       root.classList.remove('hidden');
+      setCam(0, 0, 1);
       render();
 
       btn.onclick = () => {
@@ -57,8 +73,8 @@ const Origami = (() => {
         S('polygon', {
           points: pts.map(p => p[0].toFixed(4) + ',' + p[1].toFixed(4)).join(' '),
           fill: shade(col, dim),
-          stroke: shade(col, 0.7),
-          'stroke-width': 0.012,
+          stroke: shade(col, 0.86),
+          'stroke-width': 0.014,
           'stroke-linejoin': 'round',
         }, paperG);
       }
@@ -72,16 +88,19 @@ const Origami = (() => {
         const step = R.steps[idx];
         mv.forEach(L => {
           const f = flipped ? !L.flip : L.flip;
-          poly(L, L.pts.map(p => Fold.project(p, split.li, c)), f, 0.8 + 0.2 * Math.abs(c), flipped && step.paint ? step.paint : null);
+          poly(L, L.pts.map(p => Fold.project(p, split.li, c)), f, 0.86 + 0.14 * Math.abs(c), flipped && step.paint ? step.paint : null);
         });
       }
 
-      function setCam(x, y) { camX = x; camY = y; cam.setAttribute('transform', `translate(${-x} ${-y})`); }
+      function setCam(x, y, s) {
+        camX = x; camY = y; camS = s;
+        cam.setAttribute('transform', `scale(${s}) translate(${-x} ${-y})`);
+      }
 
-      function recenter() {
-        const b = Fold.bbox(layers);
-        const sx = camX, sy = camY;
-        return tween(450, t => setCam(lerp(sx, b.cx, t), lerp(sy, b.cy, t)), ease.inOutCubic);
+      function recenter(scale = 1, dur = 450, box = null) {
+        const b = box || Fold.bbox(layers);
+        const sx = camX, sy = camY, ss = camS;
+        return tween(dur, t => setCam(lerp(sx, b.cx, t), lerp(sy, b.cy, t), lerp(ss, scale, t)), ease.inOutCubic);
       }
 
       function beginStep() {
@@ -97,8 +116,7 @@ const Origami = (() => {
 
       function drawGuide() {
         const li = split.li;
-        const a = li.a, u = li.u, n = li.n;
-        // 무게중심(대략)
+        const a = li.a, u = li.u;
         let cx = 0, cy = 0, k = 0;
         split.move.forEach(L => L.pts.forEach(p => { cx += p[0]; cy += p[1]; k++; }));
         cx /= k; cy /= k;
@@ -106,20 +124,19 @@ const Origami = (() => {
         const t = Fold.project(c, li, -1);
         const mid = [(c[0] + t[0]) / 2, (c[1] + t[1]) / 2];
         const dist = Math.hypot(t[0] - c[0], t[1] - c[1]);
-        // 곡선은 바깥쪽(종이 중심에서 먼 쪽)으로 휘게
         const bb = Fold.bbox(layers);
         let side = (mid[0] - bb.cx) * u[0] + (mid[1] - bb.cy) * u[1];
         side = side >= 0 ? 1 : -1;
         const ctrl = [mid[0] + u[0] * dist * 0.45 * side, mid[1] + u[1] * dist * 0.45 * side];
+        const path = `M${c[0]} ${c[1]} Q${ctrl[0]} ${ctrl[1]} ${t[0]} ${t[1]}`;
         guideG.innerHTML = `
           <line class="ori-line" x1="${a[0] - u[0] * 4}" y1="${a[1] - u[1] * 4}" x2="${a[0] + u[0] * 4}" y2="${a[1] + u[1] * 4}"
-            stroke="#fff" stroke-width="0.018" stroke-dasharray="0.07 0.05"/>
-          <path class="ori-arrow" d="M${c[0]} ${c[1]} Q${ctrl[0]} ${ctrl[1]} ${t[0]} ${t[1]}" fill="none"
-            stroke="#ffd166" stroke-width="0.035" stroke-linecap="round" marker-end="url(#oriArrow)"/>
-          <circle r="0.07" fill="#fff" opacity="0.9">
-            <animateMotion dur="1.6s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.75;1" calcMode="linear"
-              path="M${c[0]} ${c[1]} Q${ctrl[0]} ${ctrl[1]} ${t[0]} ${t[1]}"/>
-            <animate attributeName="opacity" values="0;0.9;0.9;0" keyTimes="0;0.15;0.75;1" dur="1.6s" repeatCount="indefinite"/>
+            stroke="#9F8BD9" stroke-width="0.02" stroke-dasharray="0.07 0.05" stroke-linecap="round"/>
+          <path d="${path}" fill="none" stroke="#fff" stroke-width="0.07" stroke-linecap="round" opacity=".85"/>
+          <path class="ori-arrow" d="${path}" fill="none" stroke="#FF8FA8" stroke-width="0.035" stroke-linecap="round" marker-end="url(#oriArrow)"/>
+          <circle r="0.075" fill="#fff" stroke="#C9B8F2" stroke-width="0.015" filter="url(#oriShadow)">
+            <animateMotion dur="1.6s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.75;1" calcMode="linear" path="${path}"/>
+            <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.75;1" dur="1.6s" repeatCount="indefinite"/>
           </circle>`;
       }
 
@@ -135,7 +152,7 @@ const Origami = (() => {
         const p = toLocal(svg, e);
         const dx = p.x - drag.p.x, dy = p.y - drag.p.y;
         if (Math.hypot(dx, dy) > 0.03) drag.moved = true;
-        const d = -(dx * split.li.n[0] + dy * split.li.n[1]);
+        const d = -(dx * split.li.n[0] + dy * split.li.n[1]) / camS;
         const c = clamp(1 - d / (smax * 0.95), -1, 1);
         theta = Math.acos(c);
         guideG.style.opacity = String(1 - theta / Math.PI);
@@ -157,8 +174,7 @@ const Origami = (() => {
           guideG.style.opacity = '1';
           render();
           idx++;
-          await recenter();
-          if (idx < R.steps.length) { busy = false; beginStep(); }
+          if (idx < R.steps.length) { await recenter(); busy = false; beginStep(); }
           else finish();
         } else {
           await tween(220, t => { theta = lerp(from, 0, t); render(); });
@@ -169,18 +185,41 @@ const Origami = (() => {
 
       async function finish() {
         stepLbl.textContent = '';
+        text.innerHTML = '';
+        // 장식(눈, 줄기 등)까지 포함한 크기를 재서 화면 가득 확대
         decoG.innerHTML = R.decorate;
+        decoG.style.opacity = '0';
+        const pb = Fold.bbox(layers), db = decoG.getBBox();
+        const b = {
+          x0: Math.min(pb.x0, db.x), y0: Math.min(pb.y0, db.y),
+          x1: Math.max(pb.x1, db.x + db.width), y1: Math.max(pb.y1, db.y + db.height),
+        };
+        b.cx = (b.x0 + b.x1) / 2; b.cy = (b.y0 + b.y1) / 2;
+        const fit = Math.min(2.1 / (b.x1 - b.x0), 2.1 / (b.y1 - b.y0), 2.2);
+        stage.classList.add('done');
+        await recenter(fit, 700, b);
+        decoG.style.opacity = '';
         decoG.classList.remove('show'); void decoG.getBBox(); decoG.classList.add('show');
+        // 반짝이
+        fxG.innerHTML = [[-1.1, -0.9, 0.11], [1.05, -0.7, 0.08], [-0.95, 0.85, 0.07], [1.1, 0.95, 0.1], [0, -1.25, 0.07]]
+          .map(([x, y, r], i) => `<g transform="translate(${x} ${y}) scale(${r})"><path class="ori-sparkle" style="animation-delay:${i * 0.25}s"
+            d="M0 -1 L0.25 -0.25 L1 0 L0.25 0.25 L0 1 L-0.25 0.25 L-1 0 L-0.25 -0.25Z" fill="${['#FFE29A', '#FFB8CF', '#C9B8F2'][i % 3]}"/></g>`).join('');
         Sound.fanfare();
-        text.innerHTML = `<b>${R.done}</b>`;
-        svg.classList.add('ori-done');
-        finalMarkup[recipeId] = { markup: paperG.outerHTML + decoG.outerHTML, cx: camX, cy: camY };
-        await wait(700);
+        text.innerHTML = `<span class="done-name">${R.name} 완성!</span><br>${R.done}`;
+        // 앨범에 저장 (완성작 + 장식, 꼭 맞는 viewBox)
+        const pad = 0.15;
+        album[recipeId] = {
+          name: R.name,
+          vb: `${b.x0 - pad} ${b.y0 - pad} ${b.x1 - b.x0 + pad * 2} ${b.y1 - b.y0 + pad * 2}`,
+          markup: paperG.innerHTML + decoG.innerHTML,
+        };
+        await wait(600);
         btn.textContent = '계속하기';
         btn.classList.remove('hidden');
         btn.onclick = () => {
           btn.classList.add('hidden');
-          svg.classList.remove('ori-done');
+          stage.classList.remove('done');
+          fxG.innerHTML = '';
           root.classList.add('hidden');
           svg.onpointerdown = svg.onpointermove = svg.onpointerup = svg.onpointercancel = null;
           resolve();
@@ -189,14 +228,15 @@ const Origami = (() => {
     });
   }
 
-  // 엔딩 등에서 완성작을 다시 보여주기 위한 SVG
+  // 엔딩 앨범용 SVG
   function snapshotSVG(recipeId) {
-    const f = finalMarkup[recipeId];
-    if (!f) return '';
-    return `<svg viewBox="-1.12 -1.0 2.24 2.0"><defs><filter id="oriShadow2" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="0.035" stdDeviation="0.03" flood-color="#000" flood-opacity="0.35"/></filter></defs>
-      <g transform="translate(${-f.cx} ${-f.cy})">${f.markup.replace('url(#oriShadow)', 'url(#oriShadow2)')}</g></svg>`;
+    const a = album[recipeId];
+    if (!a) return '';
+    const fid = 'alb_' + recipeId;
+    return `<svg viewBox="${a.vb}"><defs>${SHADOW_DEFS(fid)}</defs><g filter="url(#${fid})">${a.markup}</g></svg>`;
   }
+  const has = id => !!album[id];
+  const reset = () => { for (const k in album) delete album[k]; };
 
-  return { run, snapshotSVG };
+  return { run, snapshotSVG, has, reset };
 })();

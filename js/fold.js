@@ -105,54 +105,54 @@ const RECIPES = {
     name: '여행 모자',
     intro: '발자국이 숲 안쪽으로 이어져 있어.<br>여행을 떠나기 전에 모자를 접어 보자!',
     done: '완성! 이제 여행 준비 끝 🧢',
-    front: '#f1e6c8', back: '#5b8fb9',
+    front: '#FFF3E2', back: '#B7D2F7',
     start: [[-1, -1], [1, -1], [1, 1], [-1, 1]],
     steps: [
       { a: [-1, 0], b: [1, 0], flap: [0, -0.5], text: '위쪽 절반을 아래로 접어요' },
       { a: [0, 0], b: [-1, 1], flap: [-0.8, 0.2], text: '왼쪽 모서리를 가운데로 접어요' },
       { a: [0, 0], b: [1, 1], flap: [0.8, 0.2], text: '오른쪽 모서리도 가운데로!' },
-      { a: [-1, 0.72], b: [1, 0.72], flap: [0, 0.9], text: '아래 띠를 위로 접어 올려요', paint: '#3f6f96' },
+      { a: [-1, 0.72], b: [1, 0.72], flap: [0, 0.9], text: '아래 띠를 위로 접어 올려요', paint: '#94BBF0' },
     ],
     decorate: `
-      <path d="M0 0.47 l0.035 0.07 0.077 0.011 -0.056 0.054 0.013 0.077 -0.069 -0.036 -0.069 0.036 0.013 -0.077 -0.056 -0.054 0.077 -0.011z" fill="#f2c14e" stroke="#c9952a" stroke-width="0.01"/>
+      <path d="M0 0.47 l0.035 0.07 0.077 0.011 -0.056 0.054 0.013 0.077 -0.069 -0.036 -0.069 0.036 0.013 -0.077 -0.056 -0.054 0.077 -0.011z" fill="#FFE29A" stroke="#F2C66B" stroke-width="0.012"/>
     `,
   },
   tulip: {
     name: '튤립 한 송이',
     intro: '보리랑 산책하던 꽃길이 생각나…<br>꽃 한 송이를 접어 보자.',
     done: '완성! 보리가 냄새 맡던 그 꽃 🌷',
-    front: '#fbf3e6', back: '#ec94a8',
+    front: '#FFF3E2', back: '#FFC4D6',
     start: [[0, -1], [1, 0], [0, 1], [-1, 0]],
     steps: [
       { a: [-1, 0], b: [1, 0], flap: [0, 0.5], text: '아래쪽을 위로 반 접어요' },
-      { a: [-0.068, 0], b: [-0.725, -0.425], flap: [-0.85, -0.05], text: '왼쪽 끝을 위로 비스듬히!', paint: '#d9667f' },
-      { a: [0.068, 0], b: [0.725, -0.425], flap: [0.85, -0.05], text: '오른쪽 끝도 위로 비스듬히!', paint: '#d9667f' },
+      { a: [-0.068, 0], b: [-0.725, -0.425], flap: [-0.85, -0.05], text: '왼쪽 끝을 위로 비스듬히!', paint: '#FF9FBA' },
+      { a: [0.068, 0], b: [0.725, -0.425], flap: [0.85, -0.05], text: '오른쪽 끝도 위로 비스듬히!', paint: '#FF9FBA' },
     ],
     decorate: `
-      <path d="M0 0.02 C0.02 0.35 -0.02 0.6 0 0.95" stroke="#5e8a4c" stroke-width="0.06" fill="none" stroke-linecap="round"/>
-      <path d="M0 0.7 C0.25 0.55 0.4 0.6 0.45 0.45 C0.25 0.45 0.1 0.5 0 0.7Z" fill="#7aa35f" stroke="#5e8a4c" stroke-width="0.012"/>
-      <path d="M0 0.82 C-0.22 0.7 -0.35 0.72 -0.4 0.6 C-0.2 0.6 -0.08 0.66 0 0.82Z" fill="#7aa35f" stroke="#5e8a4c" stroke-width="0.012"/>
+      <path d="M0 0.02 C0.02 0.35 -0.02 0.6 0 0.95" stroke="#8FD0AE" stroke-width="0.06" fill="none" stroke-linecap="round"/>
+      <path d="M0 0.7 C0.25 0.55 0.4 0.6 0.45 0.45 C0.25 0.45 0.1 0.5 0 0.7Z" fill="#A8DCC0" stroke="#8FD0AE" stroke-width="0.012"/>
+      <path d="M0 0.82 C-0.22 0.7 -0.35 0.72 -0.4 0.6 C-0.2 0.6 -0.08 0.66 0 0.82Z" fill="#A8DCC0" stroke="#8FD0AE" stroke-width="0.012"/>
     `,
   },
   dog: {
     name: '보리 얼굴',
     intro: '보리가 보고 싶어…<br>보리 얼굴을 접어 보자.',
     done: '완성! 보리야, 금방 찾으러 갈게 🐶',
-    front: '#f6e7cf', back: '#d39a66',
+    front: '#FFF8EE', back: '#F5D2AE',
     start: [[0, -1], [1, 0], [0, 1], [-1, 0]],
     steps: [
       { a: [-1, 0], b: [1, 0], flap: [0, -0.5], text: '위쪽을 아래로 반 접어 세모를 만들어요' },
-      { a: [-0.35, 0], b: [-0.8, 0.2], flap: [-0.9, 0.03], text: '왼쪽 귀를 아래로 접어요', paint: '#8a5a3b' },
-      { a: [0.35, 0], b: [0.8, 0.2], flap: [0.9, 0.03], text: '오른쪽 귀도 아래로!', paint: '#8a5a3b' },
-      { a: [-0.25, 0.75], b: [0.25, 0.75], flap: [0, 0.95], text: '아래 끝을 살짝 위로 접어 코를 만들어요', paint: '#f6e7cf' },
+      { a: [-0.35, 0], b: [-0.8, 0.2], flap: [-0.9, 0.03], text: '왼쪽 귀를 아래로 접어요', paint: '#DDA77F' },
+      { a: [0.35, 0], b: [0.8, 0.2], flap: [0.9, 0.03], text: '오른쪽 귀도 아래로!', paint: '#DDA77F' },
+      { a: [-0.25, 0.75], b: [0.25, 0.75], flap: [0, 0.95], text: '아래 끝을 살짝 위로 접어 코를 만들어요', paint: '#FFF8EE' },
     ],
     decorate: `
-      <circle cx="-0.21" cy="0.25" r="0.065" fill="#2b2118"/><circle cx="-0.19" cy="0.23" r="0.02" fill="#fff"/>
-      <circle cx="0.21" cy="0.25" r="0.065" fill="#2b2118"/><circle cx="0.23" cy="0.23" r="0.02" fill="#fff"/>
-      <ellipse cx="0" cy="0.53" rx="0.09" ry="0.065" fill="#2b2118"/>
-      <path d="M-0.08 0.63 Q0 0.69 0 0.6 Q0 0.69 0.08 0.63" stroke="#2b2118" stroke-width="0.022" fill="none" stroke-linecap="round"/>
-      <circle cx="-0.36" cy="0.42" r="0.06" fill="#f2a29a" opacity="0.7"/>
-      <circle cx="0.36" cy="0.42" r="0.06" fill="#f2a29a" opacity="0.7"/>
+      <circle cx="-0.21" cy="0.25" r="0.065" fill="#5B5170"/><circle cx="-0.19" cy="0.23" r="0.02" fill="#fff"/>
+      <circle cx="0.21" cy="0.25" r="0.065" fill="#5B5170"/><circle cx="0.23" cy="0.23" r="0.02" fill="#fff"/>
+      <ellipse cx="0" cy="0.53" rx="0.09" ry="0.065" fill="#5B5170"/>
+      <path d="M-0.08 0.63 Q0 0.69 0 0.6 Q0 0.69 0.08 0.63" stroke="#5B5170" stroke-width="0.022" fill="none" stroke-linecap="round"/>
+      <circle cx="-0.36" cy="0.42" r="0.06" fill="#FFB8CF" opacity="0.8"/>
+      <circle cx="0.36" cy="0.42" r="0.06" fill="#FFB8CF" opacity="0.8"/>
     `,
   },
 };
