@@ -151,7 +151,7 @@ async function turnPage(swap) {
 }
 
 function hideLayers() {
-  ['title', 'select', 'origami', 'ending'].forEach(id => $(id).classList.add('hidden'));
+  ['title', 'select', 'origami', 'ending', 'ballgame'].forEach(id => $(id).classList.add('hidden'));
   hint('');
 }
 
@@ -262,6 +262,16 @@ window.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('bori.char', State.char);
     next();
   };
+  // 보리 공놀이
+  $('ballBtn').onclick = () => {
+    Sound.init();
+    turnPage(() => { hideLayers(); sceneLayer.innerHTML = ''; BallGame.open(); });
+  };
+  const toTitle = () => turnPage(() => { BallGame.close(); hideLayers(); $('title').classList.remove('hidden'); });
+  $('bgStart').onclick = () => BallGame.start();
+  $('bgRetry').onclick = () => BallGame.start();
+  $('bgBack').onclick = toTitle;
+  $('bgHome').onclick = toTitle;
   $('restartBtn').onclick = () => { Sound.init(); restart(); };
   $('mute').onclick = () => {
     Sound.init();

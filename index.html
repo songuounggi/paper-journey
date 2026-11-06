@@ -107,7 +107,10 @@
         <h1>보리를 찾아서</h1>
       </div>
       <div id="titleArt"></div>
-      <button id="startBtn" class="btn">여행 시작하기</button>
+      <div class="title-btns">
+        <button id="startBtn" class="btn">여행 시작하기</button>
+        <button id="ballBtn" class="btn btn-ghost">🎾 보리 공놀이</button>
+      </div>
       <p class="title-tip">끌고, 당기고, 접어서 보리의 흔적을 찾아요</p>
     </div>
 
@@ -120,6 +123,30 @@
       <p id="selDesc"></p>
       <div id="selList"></div>
       <button id="selGo" class="btn">이 친구로 출발!</button>
+    </div>
+
+    <!-- 보리 공놀이 -->
+    <div id="ballgame" class="hidden">
+      <svg id="bgSvg" viewBox="0 0 360 640" preserveAspectRatio="xMidYMid slice"></svg>
+      <div class="bg-hud"><div id="bgScore">0</div><div id="bgHearts"></div></div>
+      <button id="bgHome" aria-label="타이틀로">✕</button>
+      <div id="bgReady" class="bg-card">
+        <small class="bg-tag">MINI GAME</small>
+        <h2>보리 공놀이</h2>
+        <p>떨어지는 공을 보리 머리로 <b>톡!</b> 받아내요.<br>화면을 좌우로 끌어서 보리를 움직여요.</p>
+        <div class="bg-rules"><span>🎯 가운데로 받으면 +2</span><span>🦴 뼈다귀 +3</span></div>
+        <div class="bg-best">최고 기록 <b id="bgBest">0</b></div>
+        <button id="bgStart" class="btn">시작!</button>
+      </div>
+      <div id="bgOver" class="bg-card hidden">
+        <small class="bg-tag">GAME OVER</small>
+        <h2>앗, 공을 놓쳤어!</h2>
+        <div id="bgFinal" class="bg-final">0</div>
+        <div id="bgNew" class="bg-new hidden">🎉 최고 기록 경신!</div>
+        <div class="bg-best">최고 기록 <b id="bgBestOver">0</b></div>
+        <button id="bgRetry" class="btn">한 번 더!</button>
+        <button id="bgBack" class="btn btn-ghost">타이틀로</button>
+      </div>
     </div>
 
     <!-- 종이접기 -->
@@ -164,6 +191,7 @@
   <script src="js/origami.js"></script>
   <script src="js/book.js"></script>
   <script src="js/scenes.js"></script>
+  <script src="js/ballgame.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>
